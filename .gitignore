@@ -1,0 +1,27 @@
+# Entorno virtual
+.venv/
+venv/
+
+# Variables de entorno
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# FAISS / embeddings
+*.faiss
+*.pkl
+
+# Jupyter (por si usas)
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/

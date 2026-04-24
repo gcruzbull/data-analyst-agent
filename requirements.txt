@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pandas
+matplotlib
+scikit-learn
+langchain
+langgraph
+ollama
+pydantic
