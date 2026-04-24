@@ -20,7 +20,7 @@ Thumbs.db
 *.faiss
 *.pkl
 
-# Jupyter (por si usas)
+# Jupyter
 .ipynb_checkpoints/
 
 # VSCode
