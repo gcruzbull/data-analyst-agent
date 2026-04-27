@@ -1,28 +1,36 @@
-# Allow upload of CSV files and load them into a pandas DataFrame for analysis.
+"""Carga del dataset de retail con cache en memoria."""
+from __future__ import annotations
+
+import logging
+from functools import lru_cache
 
 import pandas as pd
-import os
 
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-#DATA_PATH = os.path.join(BASE_DIR, "data", "dataset_clean.csv")
+from src.config.settings import get_settings
 
-#def load_data() -> pd.DataFrame:
-#    """
-#    Load cleaned dataset
-#    """
-#    df = pd.read_csv(DATA_PATH)
-#    return df
+logger = logging.getLogger(__name__)
 
-import pandas as pd
-from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-DATA_PATH = BASE_DIR / "data" / "dataset_clean.csv"
+@lru_cache(maxsize=1)
+def load_data() -> pd.DataFrame:
+    """
+    Carga el dataset Online Retail (UCI) ya limpiado.
 
-def load_data():
-    print("Loading from:", DATA_PATH)  # debug
-    return pd.read_csv(DATA_PATH)
+    El cache evita reparsear el CSV en cada request del agente.
+    En ECS este dataset vive en la imagen Docker o en EFS / S3 montado.
+    """
+    path = get_settings().data_path
+    logger.info("Cargando dataset desde %s", path)
 
-print("BASE_DIR:", BASE_DIR)
-print("DATA_PATH:", DATA_PATH)
+    df = pd.read_csv(path, parse_dates=["InvoiceDate"])
+
+    # Normalizaciones defensivas: el dataset original tiene devoluciones
+    # (Quantity < 0) que distorsionan agregaciones de "ventas".
+    df["Quantity"] = pd.to_numeric(df["Quantity"], errors="coerce")
+    df["UnitPrice"] = pd.to_numeric(df["UnitPrice"], errors="coerce")
+
+    if "TotalPrice" not in df.columns:
+        df["TotalPrice"] = df["Quantity"] * df["UnitPrice"]
+
+    return df
 
