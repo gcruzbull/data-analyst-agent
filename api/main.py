@@ -1,7 +1,7 @@
 # This is the main entry point for the FastAPI application. 
 # It defines the API endpoints and integrates the agent built in src.agent.agent_graph.
 
-from fastapi import FastAPI, requests
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
